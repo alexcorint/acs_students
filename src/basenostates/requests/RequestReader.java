@@ -1,15 +1,22 @@
-package baseNoStates.requests;
+package basenostates.requests;
 
-import baseNoStates.DirectoryDoors;
-import baseNoStates.DirectoryUsers;
-import baseNoStates.Door;
-import baseNoStates.User;
+import basenostates.AuthGroup;
+import basenostates.DirectoryDoors;
+import basenostates.DirectoryUsers;
+import basenostates.Door;
+import basenostates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * REQUEST READER CLASS.
+ * Processes the request (Who, What, Where, When) to decide
+ * if an action is authorized.
+ */
 public class RequestReader implements Request {
   private final String credential; // who
   private final String action;     // what
@@ -20,7 +27,15 @@ public class RequestReader implements Request {
   private final ArrayList<String> reasons; // why not authorized
   private String doorStateName;
   private boolean doorClosed;
+  private static final Logger log = LoggerFactory.getLogger(RequestReader.class);
 
+  /**
+   * Constructor for the RequestReader.
+   * @param credential The user credential identifier.
+   * @param action The action to perform (e.g., "unlock").
+   * @param now The timestamp of the request.
+   * @param doorId The identifier of the target door.
+   */
   public RequestReader(String credential, String action, LocalDateTime now, String doorId) {
     this.credential = credential;
     this.action = action;
@@ -45,7 +60,10 @@ public class RequestReader implements Request {
     reasons.add(reason);
   }
 
-
+  /**
+   * Converts the request result to a String.
+   * @return String representation of the request.
+   */
   @Override
   public String toString() {
     if (userName == null) {
@@ -63,6 +81,10 @@ public class RequestReader implements Request {
             + "}";
   }
 
+  /**
+   * Converts the answer to a JSON object.
+   * @return JSONObject with the result data.
+   */
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
     json.put("authorized", authorized);
@@ -74,12 +96,15 @@ public class RequestReader implements Request {
     return json;
   }
 
-  // see if the request is authorized and put this into the request, then send it to the door.
-  // if authorized, perform the action.
+  /**
+   * Processes the request: finds user/door and checks authorization.
+   * If authorized, delegates the action to the door.
+   */
   public void process() {
     User user = DirectoryUsers.findUserByCredential(credential);
     Door door = DirectoryDoors.findDoorById(doorId);
     assert door != null : "door " + doorId + " not found";
+    log.warn("Door '{}' not found", doorId);
     authorize(user, door);
     // this sets the boolean authorize attribute of the request
     door.processRequest(this);
@@ -88,16 +113,33 @@ public class RequestReader implements Request {
     doorClosed = door.isClosed();
   }
 
-  // the result is put into the request object plus, if not authorized, why not,
-  // only for testing
+  /**
+   * Internal method to check logic rules against AuthGroup.
+   * @param user The user attempting the action.
+   * @param door The target door.
+   */
   private void authorize(User user, Door door) {
     if (user == null) {
       authorized = false;
       addReason("user doesn't exists");
     } else {
-      //TODO: get the who, where, when and what in order to decide, and if not
-      // authorized add the reason(s)
-      authorized = true;
+      this.userName = user.getName();
+
+      AuthGroup group = user.getAuthGroup();
+
+      if (group == null) {
+        authorized = false;
+        addReason("User has no permissions assigned");
+        log.warn("User has no permissions assigned");
+      } else {
+        authorized = group.isAllowed(action, doorId, now);
+
+        if (!authorized) {
+          addReason("User is not authorized to perform action '" + action + "' on door '"
+              + doorId + "' at this time.");
+          log.warn("User is not authorized");
+        }
+      }
     }
   }
 }

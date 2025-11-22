@@ -1,6 +1,6 @@
-package baseNoStates.requests;
+package basenostates.requests;
 
-import baseNoStates.Actions;
+import basenostates.Actions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
