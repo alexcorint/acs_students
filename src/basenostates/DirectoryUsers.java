@@ -19,7 +19,7 @@ public final class DirectoryUsers {
   private static final Logger log = LoggerFactory.getLogger(DirectoryUsers.class);
   private static final Map<String, AuthGroup> rolesMap = new HashMap<>();
 
-  private static final String CONFIG_FILE = "src/resources/security_config,json";
+  private static final String CONFIG_FILE = "src/resources/security_config.json";
   private static final String USERS_FILE = "src/resources/users.json";
 
   public static void makeUsers() {
@@ -58,7 +58,7 @@ public final class DirectoryUsers {
         ArrayList<String> actions = new ArrayList<>();
         JSONArray jsonActions = jsonRole.getJSONArray("actions");
 
-        if (jsonActions.isEmpty() && jsonActions.getString(0).equalsIgnoreCase("ALL")) {
+        if (!jsonActions.isEmpty() && jsonActions.getString(0).equalsIgnoreCase("ALL")) {
           actions.addAll(Actions.ALL_ACTIONS);
         } else {
           for (int i = 0; i < jsonActions.length(); i++) {
@@ -95,7 +95,7 @@ public final class DirectoryUsers {
         JSONObject jsonUser = root.getJSONObject(i);
 
         String name = jsonUser.getString("name");
-        String credentials = jsonUser.getString("credentials");
+        String credentials = jsonUser.getString("credential");
         String role = jsonUser.getString("role");
         User user = new User(name, credentials, role);
 
