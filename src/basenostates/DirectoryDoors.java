@@ -2,9 +2,12 @@ package basenostates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DirectoryDoors {
   private static ArrayList<Door> allDoors;
+  private static final Logger log =  LoggerFactory.getLogger(DirectoryDoors.class);
 
   public static void makeDoors() {
     // basement
@@ -31,7 +34,7 @@ public final class DirectoryDoors {
         return door;
       }
     }
-    System.out.println("door with id " + id + " not found");
+    log.info("door with id '{}' not found", id);
     return null; // otherwise we get a Java error
   }
 

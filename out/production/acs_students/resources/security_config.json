@@ -1,0 +1,37 @@
+{
+  "roles": {
+    "employee": {
+      "schedule": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-03-01",
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
+      },
+      "actions": ["open", "close", "unlock_shortly"],
+      "allowed_areas": ["Ground Floor", "Floor 1", "Exterior", "Stairs"]
+    },
+    "manager": {
+      "schedule": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-03-01",
+        "startTime": "08:00",
+        "endTime": "20:00",
+        "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]
+      },
+      "actions": ["ALL"],
+      "allowed_areas": ["ROOT"]
+    },
+    "admin": {
+      "schedule": {
+        "startDate": "2025-01-01",
+        "endDate": "2100-01-01",
+        "startTime": "00:00",
+        "endTime": "23:59",
+        "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+      },
+      "actions": ["ALL"],
+      "allowed_areas": ["ROOT"]
+    }
+  }
+}

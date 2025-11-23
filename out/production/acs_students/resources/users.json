@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Bernat",
+    "credential": "12345",
+    "role": "visitor"
+  },
+  {
+    "name": "Blai",
+    "credential": "77532",
+    "role": "visitor"
+  },
+  {
+    "name": "Ernest",
+    "credential": "74984",
+    "role": "employee"
+  },
+  {
+    "name": "Eulalia",
+    "credential": "43295",
+    "role": "employee"
+  },
+  {
+    "name": "Manel",
+    "credential": "95783",
+    "role": "manager"
+  },
+  {
+    "name": "Marta",
+    "credential": "05827",
+    "role": "manager"
+  },
+  {
+    "name": "Ana",
+    "credential": "11343",
+    "role": "admin"
+  }
+]
