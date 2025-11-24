@@ -31,6 +31,7 @@ public class RequestReader implements Request {
 
   /**
    * Constructor for the RequestReader.
+   *
    * @param credential The user credential identifier.
    * @param action The action to perform (e.g., "unlock").
    * @param now The timestamp of the request.
@@ -103,25 +104,47 @@ public class RequestReader implements Request {
   public void process() {
     User user = DirectoryUsers.findUserByCredential(credential);
     Door door = DirectoryDoors.findDoorById(doorId);
-    assert door != null : "door " + doorId + " not found";
-    log.warn("Door '{}' not found", doorId);
+
+    if (door == null) {
+      log.warn("[REQUEST] FAILED: Door '{}' not found for user '{}'",
+          doorId, credential);
+      return;
+    }
+
     authorize(user, door);
-    // this sets the boolean authorize attribute of the request
+
+    String preState = door.getStateName();
+    boolean preClosed = door.isClosed();
+
     door.processRequest(this);
-    // even if not authorized we process the request, so that if desired we could log all
-    // the requests made to the server as part of processing the request
+
+    if (isAuthorized()) {
+      if (!preState.equals(door.getStateName())
+          || preClosed != door.isClosed()) {
+        log.info("[REQUEST] SUCCESS: Authorized for user '{}' ({})",
+            userName, (user != null ? user.getRole() : "unknown"));
+      } else {
+        log.debug("[REQUEST] Action ignored or redundant.");
+      }
+
+    } else {
+      log.warn("[REQUEST] DENIED: User {} forbidden on  door '{}'. Reason: {}",
+          userName, doorId, reasons);
+    }
+
     doorClosed = door.isClosed();
   }
 
   /**
    * Internal method to check logic rules against AuthGroup.
+   *
    * @param user The user attempting the action.
    * @param door The target door.
    */
   private void authorize(User user, Door door) {
     if (user == null) {
       authorized = false;
-      addReason("user doesn't exists");
+      addReason("User doesn't exists");
     } else {
       this.userName = user.getName();
 
@@ -130,14 +153,12 @@ public class RequestReader implements Request {
       if (group == null) {
         authorized = false;
         addReason("User has no permissions assigned");
-        log.warn("User has no permissions assigned");
       } else {
         authorized = group.isAllowed(action, doorId, now);
 
         if (!authorized) {
           addReason("User is not authorized to perform action '" + action + "' on door '"
               + doorId + "' at this time.");
-          log.warn("User is not authorized");
         }
       }
     }

@@ -17,6 +17,7 @@ public class UnlockedShortly extends DoorState implements Observer {
 
   /**
    * Constructor for the Unlocked Shortly state.
+   *
    * @param door the Door instance to be controlled.
    */
   public UnlockedShortly(Door door) {
@@ -29,33 +30,28 @@ public class UnlockedShortly extends DoorState implements Observer {
   /**
    * Callback from the Clock.
    * Checks if the door is closed to lock it, or open to prop it.
+   *
    * @param o     the observable object.
    * @param arg   an argument passed to the {@code notifyObservers}
    *                 method.
    */
   @Override
   public void update(Observable o, Object arg) {
-    log.debug("Trying to unlock the door");
+    log.debug("[UNLOCK SHORTLY] Trying to unlock the door");
 
     if (!door.isClosed()) {
-      log.info("Door is still open after the unlocked period. Door is now propped.");
+      log.warn("[UNLOCK SHORTLY] The door is still open after the unlocked period. Door is now propped.");
       door.setState(new Propped(door));
       return;
     }
 
-    log.info("Door has been locked automatically");
     door.setState(new Locked(door));
   }
 
-  /**
-   * Converts the state into a string of characters.
-   * @return the 'Unlocked shortly' string state.
-   */
   @Override
   public String toString() {
-    return "Unlocked shortly";
+    return "unlocked_shortly";
   }
-
 
   /**
    * 'Unlock' the Unlocked Shortly door and stops the
@@ -67,32 +63,23 @@ public class UnlockedShortly extends DoorState implements Observer {
     clock.stop();
     clock.deleteObserver(this);
 
-    log.info("Door has been unlocked permanently");
     door.setState(new Unlocked(door));
   }
 
-  /**
-   * 'Open' the Unlocked Shortly door. Checks if the door
-   * is closed before.
-   */
   @Override
   public void open() {
     if (!door.isClosed()) {
-      log.warn("The door is already open");
+      log.warn("[UNLOCK SHORTLY] The door is already open");
       return;
     }
 
     door.setClosed(false);
-    log.info("The door has been opened");
   }
 
-  /**
-   * 'Lock' the Unlocked Shortly door and stops the timer.
-   */
   @Override
   public void lock() {
     if (!door.isClosed()) {
-      log.warn("The door is open. Unable to lock the door");
+      log.warn("[UNLOCK SHORTLY] The door is open. Unable to lock the door");
       return;
     }
 
@@ -101,19 +88,17 @@ public class UnlockedShortly extends DoorState implements Observer {
     clock.deleteObserver(this);
 
     door.setState(new Locked(door));
-    log.info("The door has been locked");
   }
 
 
   @Override
   public void close() {
     if (door.isClosed()) {
-      log.warn("The door is already closed");
+      log.warn("[UNLOCK SHORTLY] The door is already closed");
       return;
     }
 
     door.setClosed(true);
-    log.info("The door has been closed and locked");
     lock();
   }
 }

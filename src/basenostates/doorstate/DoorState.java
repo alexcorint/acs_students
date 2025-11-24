@@ -12,6 +12,7 @@ public abstract class DoorState {
 
   /**
    * Constructor for the DoorState interface.
+   *
    * @param door the Door instance to be controlled.
    */
   public DoorState(Door door) {

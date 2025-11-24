@@ -45,6 +45,14 @@ public class AreaFinder implements Visitor {
   public void visitSpace(Space s) {
     if (s.getId().equals(this.id)) {
       this.area = s;
+      return;
+    }
+
+    for (Door door : s.getDoors()) {
+      if (door.getId().equals(this.id)) {
+        this.area = s;
+        return;
+      }
     }
   }
 

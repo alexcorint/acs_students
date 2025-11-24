@@ -13,60 +13,40 @@ public class Locked extends DoorState {
 
   /**
    * Constructor for the Locked state.
+   *
    * @param door the Door instance to be controlled.
    */
   public Locked(Door door) {
     super(door);
   }
 
-  /**
-   * Locked toString conversion.
-   * @return the 'Locked' string state.
-   */
   @Override
   public String toString() {
-    return "Locked";
+    return "locked";
   }
 
-  /**
-   * Warns that a Locked door can't be locked again.
-   */
   @Override
   public void lock() {
-    log.warn("The door is already locked");
+    log.warn("[LOCKED] The door is already locked");
   }
 
-  /**
-   * 'Unlock' a Locked door.
-   */
   @Override
   public void unlock() {
-    log.info("The door is unlocked");
     door.setState(new Unlocked(door));
   }
 
-  /**
-   * 'Unlock shortly' a Locked door.
-   */
   @Override
   public void unlockShortly() {
-    log.info("The door is unlocked shortly");
     door.setState(new UnlockedShortly(door));
   }
 
-  /**
-   * Warns that a Locked door can't be opened.
-   */
   @Override
   public void open() {
-    log.warn("The door is locked, cannot be opened");
+    log.warn("[LOCKED] The door is locked");
   }
 
-  /**
-   * Warns that a Locked door is closed.
-   */
   @Override
   public void close() {
-    log.warn("The door is locked, it is already closed");
+    log.warn("[LOCKED] The door is locked");
   }
 }

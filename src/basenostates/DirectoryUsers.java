@@ -28,6 +28,7 @@ public final class DirectoryUsers {
   }
 
   private static void loadRoles() {
+    log.info("[LOADER] Loading roles");
     try {
       String content = new String(Files.readAllBytes(Paths.get(CONFIG_FILE)));
       JSONObject root = new JSONObject(content);
@@ -61,32 +62,33 @@ public final class DirectoryUsers {
         if (!jsonActions.isEmpty() && jsonActions.getString(0).equalsIgnoreCase("ALL")) {
           actions.addAll(Actions.ALL_ACTIONS);
         } else {
-          for (int i = 0; i < jsonActions.length(); i++) {
-            actions.add(jsonActions.getString(i));
+          for (int j = 0; j < jsonActions.length(); j++) {
+            actions.add(jsonActions.getString(j));
           }
         }
 
         // Parse areas
         ArrayList<Area> areas = new ArrayList<>();
         JSONArray jsonAreas = jsonRole.getJSONArray("allowed_areas");
-        for (int i = 0; i < jsonAreas.length(); i++) {
-          String areaId = jsonAreas.getString(i);
+        for (int k = 0; k < jsonAreas.length(); k++) {
+          String areaId = jsonAreas.getString(k);
           areas.add(DirectoryAreas.findArea(areaId));
         }
 
         // Create auth level
-        AuthGroup group = new AuthGroup(actions, areas,  schedule);
+        AuthGroup group = new AuthGroup(actions, areas, schedule);
         rolesMap.put(roleName, group);
       }
-      log.info("Roles loaded successfully.");
+      log.info("[LOADER] Roles loaded successfully.");
 
     } catch (IOException e) {
-      log.error("Error reading security config file");
+      log.error("[LOADER] ERROR: Roles failed to load.");
       log.error(e.getMessage());
     }
   }
 
   private static void loadUsers() {
+    log.info("[LOADER] Loading users");
     try {
       String content = new String(Files.readAllBytes(Paths.get(USERS_FILE)));
       JSONArray root = new JSONArray(content);
@@ -102,17 +104,17 @@ public final class DirectoryUsers {
         if (rolesMap.containsKey(role)) {
           user.setAuthGroup(rolesMap.get(role));
         } else {
-          log.warn("Role '{}' not found for user '{}'", role, name);
+          log.warn("[LOADER] WARNING: Role '{}' not found for user '{}'", role, name);
           user.setAuthGroup(new AuthGroup(new ArrayList<>(), new ArrayList<>(), new Schedule()));
         }
 
         users.add(user);
       }
 
-      log.info("Users loaded successfully.");
+      log.info("[LOADER] Users loaded successfully.]");
 
     } catch (IOException e) {
-      log.error("Error reading users file");
+      log.error("[LOADER] ERROR: Users failed to load.");
       log.error(e.getMessage());
     }
   }
@@ -123,7 +125,7 @@ public final class DirectoryUsers {
         return user;
       }
     }
-    System.out.println("user with credential " + credential + " not found");
+    log.debug("User with credential '{}' not found", credential);
     return null; // otherwise we get a Java error
   }
 

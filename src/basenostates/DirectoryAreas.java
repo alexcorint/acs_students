@@ -3,6 +3,8 @@ package basenostates;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DIRECTORY AREAS CLASS.
@@ -11,6 +13,7 @@ import java.util.Collections;
  */
 public class DirectoryAreas {
   private static ArrayList<Area> areas;
+  private static final Logger log = LoggerFactory.getLogger(DirectoryAreas.class);
 
   /**
    * Creates and organizes the hierarchy of spaces and partitions.
@@ -18,39 +21,41 @@ public class DirectoryAreas {
    */
   public static void defineAreas(ArrayList<Door> doors) {
     // Main spaces
-    Space parking = new Space("Parking",
+    Space parking = new Space("parking",
         new ArrayList<>(Arrays.asList(doors.get(0), doors.get(1))));
-    Space hall = new Space("Hall",
+    Space hall = new Space("hall",
         new ArrayList<>(Arrays.asList(doors.get(2), doors.get(3), doors.get(4), doors.get(5))));
-    Space stairs = new Space("Stairs",
+    Space stairs = new Space("stairs",
         new ArrayList<>(Arrays.asList(doors.get(1), doors.get(3), doors.get(6))));
-    Space corridor = new Space("Corridor",
+    Space corridor = new Space("corridor",
         new ArrayList<>(Arrays.asList(doors.get(6), doors.get(7), doors.get(8))));
-    Space exterior = new Space("Exterior",
+    Space exterior = new Space("exterior",
         new ArrayList<>(Arrays.asList(doors.get(0), doors.get(2))));
 
     // Singletons
-    Space room1 = new Space("Room1",
+    Space room1 = new Space("room1",
         new ArrayList<>(Collections.singletonList(doors.get(4))));
-    Space room2 = new Space("Room2",
+    Space room2 = new Space("room2",
         new ArrayList<>(Collections.singletonList(doors.get(5))));
-    Space room3 = new Space("Room3",
+    Space room3 = new Space("room3",
         new ArrayList<>(Collections.singletonList(doors.get(7))));
-    Space it = new Space("IT",
+    Space it = new Space("it",
         new ArrayList<>(Collections.singletonList(doors.get(8))));
 
     // Main partitions
-    Partition basement = new Partition("Basement",
+    Partition basement = new Partition("basement",
         new ArrayList<>(Collections.singletonList(parking)));
-    Partition groundFloor = new Partition("Ground Floor",
+    Partition groundFloor = new Partition("ground floor",
         new ArrayList<>(Arrays.asList(hall, room1, room2)));
-    Partition floor1 = new Partition("Floor 1",
+    Partition floor1 = new Partition("floor 1",
         new ArrayList<>(Arrays.asList(corridor, it, room3)));
 
     // Main building
     areas = new ArrayList<>(Collections.singletonList(
-        new Partition("Building",
+        new Partition("building",
             new ArrayList<>(Arrays.asList(basement, groundFloor, floor1, stairs, exterior)))));
+
+    log.info("[DIRECTORY AREAS] Success: Building loaded");
   }
 
   /**

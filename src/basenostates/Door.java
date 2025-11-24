@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Door {
   private final String id;
+  private final String space;
   private boolean closed; // physically
   private DoorState state;
 
@@ -21,27 +22,29 @@ public class Door {
 
   /**
    * Constructor for the Door class.
+   *
    * @param id the identification string of the door.
+   * @param space the name of the bounded space.
    */
-  public Door(String id) {
+  public Door(String id, String space) {
     this.id = id;
+    this.space = space;
     this.state = new Unlocked(this);
     this.closed = true;
   }
 
   /**
    * Processes the order sent from a Request Reader.
+   *
    * @param request The instance of RequestReader to be
    *                processed.
    */
   public void processRequest(RequestReader request) {
-    // it is the Door that process the request because the door has and knows
-    // its state, and if closed or open
     if (request.isAuthorized()) {
       String action = request.getAction();
       doAction(action);
     } else {
-      log.warn("Not enough permissions to perform this operation.");
+      log.debug("Not enough permissions to perform this operation.");
     }
     request.setDoorStateName(getStateName());
   }
@@ -71,6 +74,7 @@ public class Door {
 
   /**
    * Returns whether the door is closed or not.
+   *
    * @return true if the door is closed.
    */
   public boolean isClosed() {
@@ -79,6 +83,7 @@ public class Door {
 
   /**
    * Returns the identification of the door.
+   *
    * @return ID string.
    */
   public String getId() {
@@ -86,7 +91,17 @@ public class Door {
   }
 
   /**
+   * Returns the name of the space.
+   *
+   * @return name string.
+   */
+  public String getSpace() {
+    return space;
+  }
+
+  /**
    * Gets the name of the actual door state.
+   *
    * @return Door State string.
    */
   public String getStateName() {
@@ -95,29 +110,30 @@ public class Door {
 
   /**
    * Sets the actual state of the door.
+   *
    * @param state DoorState instance of the actual
    *              state.
    */
   public void setState(DoorState state) {
+    log.info("[DOOR] Door '{}' changed to '{}'", id, state.toString());
     this.state = state;
   }
 
   /**
    * Sets if the door is closed or not.
+   *
    * @param closed boolean of the closed state.
    */
   public void setClosed(boolean closed) {
+    log.info("[DOOR] Door '{}' changed to '{}'", id, (closed ? "closed" : "open"));
     this.closed = closed;
   }
 
-  /**
-   * Converts the door data into a string.
-   * @return String 'Door{id, closed, state}'
-   */
   @Override
   public String toString() {
     return "Door{"
         + "id='" + id + '\''
+        + ", space='" + space + '\''
         + ", closed=" + closed
         + ", state=" + getStateName()
         + "}";
@@ -125,11 +141,13 @@ public class Door {
 
   /**
    * Converts the door data into a JSON object.
+   *
    * @return JSON object of the instanced door.
    */
   public JSONObject toJson() {
     JSONObject json = new JSONObject();
     json.put("id", id);
+    json.put("space", space);
     json.put("state", getStateName());
     json.put("closed", closed);
     return json;
