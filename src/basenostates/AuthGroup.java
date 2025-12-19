@@ -41,7 +41,7 @@ public class AuthGroup {
   public boolean isAllowed(String action, String id, LocalDateTime now) {
     // Checks the 'what'
     if (!actions.contains(action)) {
-      log.warn("Action cannot be performed");
+      log.warn("[AUTH GROUP] Invalid action");
       return false;
     }
 
@@ -52,13 +52,13 @@ public class AuthGroup {
     }
 
     if (toFind.getArea() == null) {
-      log.warn("Invalid area");
+      log.warn("[AUTH GROUP] Invalid area");
       return false;
     }
 
     // Checks the 'when'
     if (!schedule.isWorking(now)) {
-      log.warn("Out of schedule");
+      log.warn("[AUTH GROUP] Out of schedule");
       return false;
     }
 

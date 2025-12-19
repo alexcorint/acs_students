@@ -1,81 +1,165 @@
-@startuml
-'https://plantuml.com/class-diagram
-skinparam classAttributeIconSize 0
+@startuml classDiagram
+    class Main {
+        +main(args: String[])
+    }
 
-class Webserver {
-- {static} PORT :int
-- {static} FORMATTER : DateTimeFormatter
-+ Webserver()
-}
+    class DirectoryDoors {
+        -allDoors: ArrayList~Door~
+        +makeDoors()
+        +findDoorById(id: String): Door
+        +getAllDoors(): ArrayList~Door~
+    }
 
-class SocketThread {
-- insocked : Socked
-- makeRequest(tokens : String[]) : Request
-- makeRequestReader(tokens : String[]) : RequestReader
-- makeRequestArea(tokens : String[]) : RequestArea
-- makeHeaderAnswer() : String
-- makeJsonAnswer(request : Request) : String
-+ run()
-}
+    class DirectoryUsers {
+        -users: ArrayList~User~
+        -rolesMap: Map~String, AuthGroup~
+        +makeUsers()
+        +loadRoles()
+        +loadUsers()
+        +findUserByCredential(credential: String): User
+        +findUserByName(name: String): User
+    }
 
-Webserver +-right- SocketThread
+    class DirectoryAreas {
+        -areas: ArrayList~Area~
+        +defineAreas(doors: ArrayList~Door~)
+        +findArea(id: String): Area
+        +getAreas(): ArrayList~Area~
+    }
 
-note right of SocketThread
-inner class
-of Webserver
-end note
+    class User {
+        -name: String
+        -credential: String
+        -role: String
+        -authGroup: AuthGroup
+        +getAuthGroup(): AuthGroup
+        +toString(): String
+    }
 
-class DirectoryDoors {
-- {static} allDoors : Door[]
-+ {static} makeDoors()
-+ {static} findDoorById(id : String) : Door
-+ {static} getAllDoors() : Door[]
-}
+    class AuthGroup {
+        -actions: ArrayList~String~
+        -allowedAreas: ArrayList~Area~
+        -schedule: Schedule
+        +isAllowed(action: String, id: String, now: LocalDateTime): boolean
+    }
 
-DirectoryDoors --> "*" Door : "allDoors"
+    class Schedule {
+        -startDate: LocalDate
+        -endDate: LocalDate
+        -startTime: LocalTime
+        -endTime: LocalTime
+        -daysOfWeek: ArrayList~DayOfWeek~
+        +isWorking(dateTime: LocalDateTime): boolean
+    }
 
-class DirectoryUsers {
-- {static} users : User[]
-+ {static} makeUsers()
-+ {static} findUserByCredential(credential : String) : User
-}
+    class Door {
+        -id: String
+        -space: String
+        -closed: boolean
+        -state: DoorState
+        +processRequest(request: RequestReader)
+        +setState(doorState: DoorState)
+        +toJson(): JSONObject
+    }
 
-DirectoryUsers --> "*" User : "users"
+    class DoorState {
+        <<abstract>>
+        #door: Door
+        +unlock()
+        +open()
+        +lock()
+        +close()
+        +unlockShortly()
+    }
 
-class Door {
-- id : String
-- closed : boolean
-+ Door(id : String)
-+ processRequest(request : RequestReader)
-+ setState(doorState : DoorState)
-+ toJson() : JSONObject
-'+ toString() : String
-'+ isClosed() :boolean
-'+ setClosed(b : boolean)
-'+ getStateName() : String
-- doAction(action : String)
-}
+    class Locked {
+    }
+    class Unlocked {
+    }
+    class Propped {
+    }
+    class UnlockedShortly {
+        +update(o: Observable, arg: Object)
+    }
 
+    class Clock {
+        -instance: Clock
+        +getInstance(): Clock
+        +start()
+        +stop()
+    }
 
-class User {
-- name : String
-- credential : String
-+ User(name: String, credential: String)
-+ toString() : String
-}
+    class Area {
+        <<abstract>>
+        -id: String
+        +acceptVisitor(v: Visitor)
+        +toJson(depth: int): JSONObject
+    }
 
+    class Partition {
+        -spaces: ArrayList~Area~
+        +getSpaces(): ArrayList~Area~
+    }
 
-class Main {
-+ {static} main(args : String)
-}
+    class Space {
+        -doors: ArrayList~Door~
+        +getDoors(): ArrayList~Door~
+    }
 
-note right of Main::main
-DirectoryDoors.makeDoors()
-DiretoryUsers.makeUsers()
-new Webserver()
-end note
+    class Visitor {
+        <<interface>>
+        +visitSpace(s: Space)
+        +visitPartition(p: Partition)
+        +getArea(): Area
+        +getDoors(): ArrayList~Door~
+    }
 
-Main -[hidden]down- Webserver
-Webserver -[hidden]down- DirectoryDoors
-DirectoryDoors -[hidden]right- DirectoryUsers
+    class AreaFinder {
+        -id: String
+        -area: Area
+        +visitSpace(s: Space)
+        +visitPartition(p: Partition)
+    }
+
+    class AccessDoors {
+        -doors: ArrayList~Door~
+        +visitSpace(s: Space)
+        +visitPartition(p: Partition)
+    }
+
+    class WebServer {
+        +main(args: String[])
+    }
+
+    
+    Main ..> DirectoryDoors : init
+    Main ..> DirectoryUsers : init
+    Main ..> DirectoryAreas : init
+    Main ..> WebServer : starts
+
+    DirectoryDoors "1" *-- "*" Door
+    DirectoryUsers "1" *-- "*" User
+    DirectoryAreas "1" *-- "*" Area
+    
+    User --> AuthGroup
+    AuthGroup --> Schedule
+    AuthGroup ..> AreaFinder : uses
+    
+    Door --> DoorState
+    DoorState <|-- Locked
+    DoorState <|-- Unlocked
+    DoorState <|-- Propped
+    DoorState <|-- UnlockedShortly
+    
+    UnlockedShortly ..> Clock : observes
+    
+    Area <|-- Partition
+    Area <|-- Space
+    Partition "1" o-- "*" Area
+    Space "1" o-- "*" Door
+    
+    Visitor <|.. AreaFinder
+    Visitor <|.. AccessDoors
+    Area ..> Visitor : accepts
+
 @enduml

@@ -63,6 +63,7 @@ public class RequestReader implements Request {
 
   /**
    * Converts the request result to a String.
+   *
    * @return String representation of the request.
    */
   @Override
@@ -84,6 +85,7 @@ public class RequestReader implements Request {
 
   /**
    * Converts the answer to a JSON object.
+   *
    * @return JSONObject with the result data.
    */
   public JSONObject answerToJson() {
@@ -158,7 +160,7 @@ public class RequestReader implements Request {
 
         if (!authorized) {
           addReason("User is not authorized to perform action '" + action + "' on door '"
-              + doorId + "' at this time.");
+              + doorId + "'.");
         }
       }
     }

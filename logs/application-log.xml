@@ -1,0 +1,40 @@
+<log4j:event logger="basenostates.DirectoryDoors" timestamp="1765895663881" level="INFO" thread="main">
+<log4j:message><![CDATA[[DIRECTORY DOORS] Success: Initialized 9 doors]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryDoors" method="makeDoors" file="DirectoryDoors.java" line="29"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryAreas" timestamp="1765895663886" level="INFO" thread="main">
+<log4j:message><![CDATA[[DIRECTORY AREAS] Success: Building loaded]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryAreas" method="defineAreas" file="DirectoryAreas.java" line="58"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663888" level="INFO" thread="main">
+<log4j:message><![CDATA[[LOADER] Loading roles]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadRoles" file="DirectoryUsers.java" line="31"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663912" level="INFO" thread="main">
+<log4j:message><![CDATA[[LOADER] Roles loaded successfully.]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadRoles" file="DirectoryUsers.java" line="82"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663912" level="INFO" thread="main">
+<log4j:message><![CDATA[[LOADER] Loading users]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadUsers" file="DirectoryUsers.java" line="91"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663914" level="WARN" thread="main">
+<log4j:message><![CDATA[[LOADER] WARNING: Role 'visitor' not found for user 'Bernat']]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadUsers" file="DirectoryUsers.java" line="107"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663914" level="WARN" thread="main">
+<log4j:message><![CDATA[[LOADER] WARNING: Role 'visitor' not found for user 'Blai']]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadUsers" file="DirectoryUsers.java" line="107"/>
+</log4j:event>
+
+<log4j:event logger="basenostates.DirectoryUsers" timestamp="1765895663914" level="INFO" thread="main">
+<log4j:message><![CDATA[[LOADER] Users loaded successfully.]]]></log4j:message>
+<log4j:locationInfo class="basenostates.DirectoryUsers" method="loadUsers" file="DirectoryUsers.java" line="114"/>
+</log4j:event>
+

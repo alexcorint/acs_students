@@ -1,5 +1,5 @@
 package basenostates;
-
+//APLICAR PATRON  PARA LOS TRES DIRECTORY
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

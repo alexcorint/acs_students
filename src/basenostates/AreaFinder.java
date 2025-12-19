@@ -43,13 +43,13 @@ public class AreaFinder implements Visitor {
    */
   @Override
   public void visitSpace(Space s) {
-    if (s.getId().equals(this.id)) {
+    if (s.getId().equalsIgnoreCase(this.id)) {
       this.area = s;
       return;
     }
 
     for (Door door : s.getDoors()) {
-      if (door.getId().equals(this.id)) {
+      if (door.getId().equalsIgnoreCase(this.id)) {
         this.area = s;
         return;
       }
@@ -62,7 +62,7 @@ public class AreaFinder implements Visitor {
    */
   @Override
   public void visitPartition(Partition p) {
-    if (p.getId().equals(this.id)) {
+    if (p.getId().equalsIgnoreCase(this.id)) {
       this.area = p;
     } else {
       for (Area area : p.getSpaces()) {
