@@ -1,0 +1,26 @@
+<configuration>
+
+    <appender name="XML_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application-log.xml</file>
+
+        <append>true</append>
+
+        <layout class="ch.qos.logback.classic.log4j.XMLLayout">
+            <locationInfo>true</locationInfo>
+
+            <properties>true</properties>
+        </layout>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="XML_FILE" />
+    </root>
+
+</configuration>
