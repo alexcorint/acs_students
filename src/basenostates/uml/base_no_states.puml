@@ -3,26 +3,27 @@
         +main(args: String[])
     }
 
-    class DirectoryDoors {
+    class DirectoryDoors <<Singleton>> {
+        -{static} instance: DirectoryDoors
         -allDoors: ArrayList~Door~
-        +makeDoors()
+        +{static} getInstance(): DirectoryDoors
         +findDoorById(id: String): Door
         +getAllDoors(): ArrayList~Door~
     }
 
-    class DirectoryUsers {
+    class DirectoryUsers <<Singleton>> {
+        -{static} instance: DirectoryUsers
         -users: ArrayList~User~
         -rolesMap: Map~String, AuthGroup~
-        +makeUsers()
-        +loadRoles()
-        +loadUsers()
+        +{static} getInstance(): DirectoryUsers
         +findUserByCredential(credential: String): User
-        +findUserByName(name: String): User
+        +getUsers(): ArrayList~User~
     }
 
-    class DirectoryAreas {
+    class DirectoryAreas <<Singleton>> {
+        -{static} instance: DirectoryAreas
         -areas: ArrayList~Area~
-        +defineAreas(doors: ArrayList~Door~)
+        +{static} getInstance(): DirectoryAreas
         +findArea(id: String): Area
         +getAreas(): ArrayList~Area~
     }
@@ -40,6 +41,7 @@
         -actions: ArrayList~String~
         -allowedAreas: ArrayList~Area~
         -schedule: Schedule
+        +checkPermissions(action: String, door: Door, now: LocalDateTime, role: String): ArrayList~String~
         +isAllowed(action: String, id: String, now: LocalDateTime): boolean
     }
 
@@ -54,64 +56,86 @@
 
     class Door {
         -id: String
-        -space: String
+        -fromSpace: String
+        -toSpace: String
         -closed: boolean
         -state: DoorState
         +processRequest(request: RequestReader)
         +setState(doorState: DoorState)
+        +getFromSpace(): String
+        +getToSpace(): String
         +toJson(): JSONObject
     }
 
-    class DoorState {
+    class DoorState <<State>> {
         <<abstract>>
         #door: Door
-        +unlock()
-        +open()
-        +lock()
-        +close()
+        +{abstract} unlock()
+        +{abstract} open()
+        +{abstract} lock()
+        +{abstract} close()
         +unlockShortly()
     }
 
     class Locked {
+        +lock()
+        +unlock()
+        +unlockShortly()
+        +open()
+        +close()
     }
     class Unlocked {
+        +lock()
+        +unlock()
+        +unlockShortly()
+        +open()
+        +close()
     }
     class Propped {
+        +lock()
+        +unlock()
+        +unlockShortly()
+        +open()
+        +close()
     }
     class UnlockedShortly {
+        -remainingSeconds: int
         +update(o: Observable, arg: Object)
+        +close()
     }
 
-    class Clock {
-        -instance: Clock
-        +getInstance(): Clock
+    class Clock <<Singleton>> {
+        -{static} instance: Clock
+        +{static} getInstance(): Clock
         +start()
         +stop()
     }
 
-    class Area {
+    class Area <<Composite>> {
         <<abstract>>
-        -id: String
-        +acceptVisitor(v: Visitor)
-        +toJson(depth: int): JSONObject
+        #id: String
+        +{abstract} acceptVisitor(v: Visitor)
+        +{abstract} toJson(depth: int): JSONObject
     }
 
     class Partition {
         -spaces: ArrayList~Area~
         +getSpaces(): ArrayList~Area~
+        +acceptVisitor(v: Visitor)
     }
 
     class Space {
         -doors: ArrayList~Door~
         +getDoors(): ArrayList~Door~
+        +acceptVisitor(v: Visitor)
     }
 
-    class Visitor {
+    class Visitor <<Visitor>> {
         <<interface>>
-        +visitSpace(s: Space)
-        +visitPartition(p: Partition)
-        +getArea(): Area
-        +getDoors(): ArrayList~Door~
+        +{abstract} visitSpace(s: Space)
+        +{abstract} visitPartition(p: Partition)
+        +{abstract} getArea(): Area
+        +{abstract} getDoors(): ArrayList~Door~
     }
 
     class AreaFinder {
@@ -128,13 +152,13 @@
     }
 
     class WebServer {
-        +main(args: String[])
+        -PORT: int
+        +{static} logActivity(request: Request)
     }
 
-    
-    Main ..> DirectoryDoors : init
-    Main ..> DirectoryUsers : init
-    Main ..> DirectoryAreas : init
+    Main ..> DirectoryDoors : gets instance
+    Main ..> DirectoryUsers : gets instance
+    Main ..> DirectoryAreas : gets instance
     Main ..> WebServer : starts
 
     DirectoryDoors "1" *-- "*" Door
@@ -161,5 +185,4 @@
     Visitor <|.. AreaFinder
     Visitor <|.. AccessDoors
     Area ..> Visitor : accepts
-
 @enduml

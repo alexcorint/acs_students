@@ -2,19 +2,19 @@
   "roles": {
     "employee": {
       "schedule": {
-        "startDate": "2025-09-01",
-        "endDate": "2026-03-01",
+        "startDate": "2026-09-01",
+        "endDate": "2027-03-01",
         "startTime": "09:00",
         "endTime": "17:00",
         "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
       },
       "actions": ["open", "close", "unlock_shortly"],
-      "allowed_areas": ["ground floor", "floor 1", "exterior", "stairs"]
+      "allowed_areas": ["ground floor", "floor 1", "stairs", "exterior"]
     },
     "manager": {
       "schedule": {
-        "startDate": "2025-09-01",
-        "endDate": "2026-03-01",
+        "startDate": "2026-09-01",
+        "endDate": "2027-03-01",
         "startTime": "08:00",
         "endTime": "20:00",
         "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]

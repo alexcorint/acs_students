@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+// Represents the temporal dimension of access rights.
+// Encapsulates valid date range (startDate to endDate), daily time window (startTime to endTime),
+// and allowed days of the week using the modern java.util.time API.
 public class Schedule {
   private LocalDate startDate;
   private LocalTime startTime;
@@ -13,20 +16,8 @@ public class Schedule {
   private LocalTime endTime;
   private ArrayList<DayOfWeek> daysOfWeek;
 
-  /**
-   * Empty constructor if blank schedules needed
-   * for no access.
-   */
   public Schedule() {}
 
-  /**
-   * Constructor for the Schedule class.
-   * @param startDate The starting date of the permission validity.
-   * @param startTime The starting hour of the daily access.
-   * @param endDate The ending date of the permission validity.
-   * @param endTime The ending hour of the daily access.
-   * @param daysOfWeek The list of allowed days of the week.
-   */
   public Schedule(LocalDate startDate, LocalTime startTime, LocalDate endDate,
                   LocalTime endTime, ArrayList<DayOfWeek> daysOfWeek) {
     this.startDate = startDate;
@@ -36,11 +27,6 @@ public class Schedule {
     this.daysOfWeek = daysOfWeek;
   }
 
-  /**
-   * Checks if the provided timestamp is within the allowed schedule.
-   * @param dateTime The LocalDateTime to check.
-   * @return true if access is allowed at this moment.
-   */
   public boolean isWorking(LocalDateTime dateTime) {
     if (startDate == null || endDate == null) {
       return false;

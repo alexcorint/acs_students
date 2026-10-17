@@ -2,45 +2,25 @@ package basenostates.doorstate;
 
 import basenostates.Door;
 
-/**
- * DOOR STATE INTERFACE.
- * The interface that takes control over the state of a
- * Door instance
- */
+// Base class of the State design pattern applied to physical doors.
+// Instead of complex if-else conditionals in Door, each possible state (Unlocked,
+// Locked, UnlockedShortly, Propped) encapsulates its own behavior for open, close,
+// lock, unlock, and unlockShortly actions, making state transitions explicit and
+// allowing new states (e.g. Do Not Disturb) to be added without modifying Door.
 public abstract class DoorState {
   protected final Door door;
 
-  /**
-   * Constructor for the DoorState interface.
-   *
-   * @param door the Door instance to be controlled.
-   */
   public DoorState(Door door) {
     this.door = door;
   }
 
-  /**
-   * Method call to Unlock door action.
-   */
   public abstract void unlock();
 
-  /**
-   * Method call to Open door action.
-   */
   public abstract void open();
 
-  /**
-   * Method call to Lock door action.
-   */
   public abstract void lock();
 
-  /**
-   * Method call to Close door action.
-   */
   public abstract void close();
 
-  /**
-   * Method call to Unlock Shortly door action.
-   */
   public void unlockShortly() {}
 }

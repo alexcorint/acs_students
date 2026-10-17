@@ -4,18 +4,12 @@ import basenostates.Door;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * LOCKED CLASS.
- * The door state that defines a Locked door.
- */
+// Concrete state representing a locked door. In this state, physical opening and
+// closing are blocked. Authorized users can transition the door to Unlocked (permanently)
+// or to UnlockedShortly (temporary access with automatic relock).
 public class Locked extends DoorState {
   private static final Logger log = LoggerFactory.getLogger(Locked.class);
 
-  /**
-   * Constructor for the Locked state.
-   *
-   * @param door the Door instance to be controlled.
-   */
   public Locked(Door door) {
     super(door);
   }
@@ -42,11 +36,11 @@ public class Locked extends DoorState {
 
   @Override
   public void open() {
-    log.warn("[LOCKED] The door is locked");
+    log.warn("[LOCKED] The door is locked. Open action ignored");
   }
 
   @Override
   public void close() {
-    log.warn("[LOCKED] The door is locked");
+    log.warn("[LOCKED] The door is locked and closed. Close action ignored");
   }
 }

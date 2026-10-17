@@ -4,6 +4,8 @@ import basenostates.Area;
 import basenostates.DirectoryAreas;
 import org.json.JSONObject;
 
+// Request to retrieve the immediate child hierarchy (depth 1) of an area.
+// Used by the mobile app client to navigate through the tree of partitions and spaces.
 public class RequestChildren implements Request {
   private final String area;
   private JSONObject jsonTree;
@@ -27,7 +29,11 @@ public class RequestChildren implements Request {
   }
 
   public void process() {
-    Area a = DirectoryAreas.findArea(area);
-    jsonTree = a.toJson(1);
+    Area a = DirectoryAreas.getInstance().findArea(area);
+    if (a != null) {
+      jsonTree = a.toJson(1);
+    } else {
+      jsonTree = new JSONObject();
+    }
   }
 }

@@ -11,6 +11,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="json" level="project" />
-    <orderEntry type="library" name="slf4j.reload4j" level="project" />
+    <orderEntry type="library" name="logback" level="project" />
   </component>
 </module>

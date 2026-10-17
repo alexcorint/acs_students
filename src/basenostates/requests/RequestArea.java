@@ -1,14 +1,24 @@
 package basenostates.requests;
 
-import basenostates.*;
+import basenostates.AccessDoors;
+import basenostates.Actions;
+import basenostates.Area;
+import basenostates.DirectoryAreas;
+import basenostates.DirectoryUsers;
+import basenostates.Door;
+import basenostates.User;
+import basenostates.Visitor;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
-
+// Represents an action request applied to an entire area (Partition or Space).
+// Only 'lock' and 'unlock' actions are allowed for areas.
+// Processing the request uses the AccessDoors visitor to discover all doors in the area,
+// then transforms the request into individual RequestReader calls for each door.
 public class RequestArea implements Request {
   private final String credential;
   private final String action;
@@ -17,18 +27,39 @@ public class RequestArea implements Request {
   private final ArrayList<RequestReader> requests = new ArrayList<>();
   private static final Logger log = LoggerFactory.getLogger(RequestArea.class);
 
-
   public RequestArea(String credential, String action, LocalDateTime now, String areaId) {
     this.credential = credential;
     this.areaId = areaId;
     assert action.equals(Actions.LOCK) || action.equals(Actions.UNLOCK)
-            : "invalid action " + action + " for an area request";
+        : "invalid action " + action + " for an area request";
     this.action = action;
     this.now = now;
   }
 
   public String getAction() {
     return action;
+  }
+
+  public String getAreaId() {
+    return areaId;
+  }
+
+  public LocalDateTime getNow() {
+    return now;
+  }
+
+  public String getUserName() {
+    User user = DirectoryUsers.getInstance().findUserByCredential(credential);
+    return user != null ? user.getName() : "unknown";
+  }
+
+  public boolean isAuthorized() {
+    for (RequestReader r : requests) {
+      if (!r.isAuthorized()) {
+        return false;
+      }
+    }
+    return !requests.isEmpty();
   }
 
   @Override
@@ -53,19 +84,16 @@ public class RequestArea implements Request {
       requestsDoorsStr = requests.toString();
     }
     return "Request{"
-            + "credential=" + credential
-            + ", action=" + action
-            + ", now=" + now
-            + ", areaId=" + areaId
-            + ", requestsDoors=" + requestsDoorsStr
-            + "}";
+        + "credential=" + credential
+        + ", action=" + action
+        + ", now=" + now
+        + ", areaId=" + areaId
+        + ", requestsDoors=" + requestsDoorsStr
+        + "}";
   }
 
-  // processing the request of an area is creating the corresponding door requests and forwarding
-  // them to all of its doors. For some it may be authorized and action will be done, for others
-  // it won't be authorized and nothing will happen to them.
   public void process() {
-    Area area = DirectoryAreas.findArea(areaId);
+    Area area = DirectoryAreas.getInstance().findArea(areaId);
 
     if (area != null) {
       Visitor accessDoorsVisitor = new AccessDoors();
@@ -78,8 +106,7 @@ public class RequestArea implements Request {
         requests.add(requestReader);
       }
     } else {
-      log.warn("No request for area: '{}'", areaId);
+      log.warn("No area found with id: '{}'", areaId);
     }
-
   }
 }

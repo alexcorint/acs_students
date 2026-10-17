@@ -14,27 +14,37 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// DirectoryUsers implements the Singleton design pattern. It manages the loaded
+// users and role configurations. Having a single instance avoids loading configuration
+// files multiple times into memory and ensures unique user instances.
 public final class DirectoryUsers {
-  private static final ArrayList<User> users = new ArrayList<>();
+  private static DirectoryUsers instance = null;
+  private final ArrayList<User> users = new ArrayList<>();
+  private final Map<String, AuthGroup> rolesMap = new HashMap<>();
   private static final Logger log = LoggerFactory.getLogger(DirectoryUsers.class);
-  private static final Map<String, AuthGroup> rolesMap = new HashMap<>();
 
   private static final String CONFIG_FILE = "src/resources/security_config.json";
   private static final String USERS_FILE = "src/resources/users.json";
 
-  public static void makeUsers() {
+  private DirectoryUsers() {
     loadRoles();
     loadUsers();
   }
 
-  private static void loadRoles() {
+  public static DirectoryUsers getInstance() {
+    if (instance == null) {
+      instance = new DirectoryUsers();
+    }
+    return instance;
+  }
+
+  private void loadRoles() {
     log.info("[LOADER] Loading roles");
     try {
       String content = new String(Files.readAllBytes(Paths.get(CONFIG_FILE)));
       JSONObject root = new JSONObject(content);
       JSONObject jsonRoles = root.getJSONObject("roles");
 
-      // Parse every role
       for (String roleName : jsonRoles.keySet()) {
         JSONObject jsonRole = jsonRoles.getJSONObject(roleName);
 
@@ -67,12 +77,12 @@ public final class DirectoryUsers {
           }
         }
 
-        // Parse areas
+        // Parse areas using DirectoryAreas singleton
         ArrayList<Area> areas = new ArrayList<>();
         JSONArray jsonAreas = jsonRole.getJSONArray("allowed_areas");
         for (int k = 0; k < jsonAreas.length(); k++) {
           String areaId = jsonAreas.getString(k);
-          areas.add(DirectoryAreas.findArea(areaId));
+          areas.add(DirectoryAreas.getInstance().findArea(areaId));
         }
 
         // Create auth level
@@ -82,12 +92,11 @@ public final class DirectoryUsers {
       log.info("[LOADER] Roles loaded successfully.");
 
     } catch (IOException e) {
-      log.error("[LOADER] ERROR: Roles failed to load.");
-      log.error(e.getMessage());
+      log.error("[LOADER] ERROR: Roles failed to load: {}", e.getMessage());
     }
   }
 
-  private static void loadUsers() {
+  private void loadUsers() {
     log.info("[LOADER] Loading users");
     try {
       String content = new String(Files.readAllBytes(Paths.get(USERS_FILE)));
@@ -111,22 +120,24 @@ public final class DirectoryUsers {
         users.add(user);
       }
 
-      log.info("[LOADER] Users loaded successfully.]");
+      log.info("[LOADER] Users loaded successfully.");
 
     } catch (IOException e) {
-      log.error("[LOADER] ERROR: Users failed to load.");
-      log.error(e.getMessage());
+      log.error("[LOADER] ERROR: Users failed to load: {}", e.getMessage());
     }
   }
 
-  public static User findUserByCredential(String credential) {
+  public User findUserByCredential(String credential) {
     for (User user : users) {
       if (user.getCredential().equals(credential)) {
         return user;
       }
     }
     log.debug("User with credential '{}' not found", credential);
-    return null; // otherwise we get a Java error
+    return null;
   }
 
+  public ArrayList<User> getUsers() {
+    return users;
+  }
 }

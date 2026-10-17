@@ -1,0 +1,64 @@
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryDoors - [DIRECTORY DOORS] Success: Initialized 9 doors
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryAreas - [DIRECTORY AREAS] Success: Building loaded
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading roles
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Roles loaded successfully.
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading users
+2026-10-16 19:46:04 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Bernat'
+2026-10-16 19:46:04 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Blai'
+2026-10-16 19:46:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Users loaded successfully.
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-01T10:00
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid area: destination 'hall' not allowed
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid action: 'open'
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-01T20:00
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-03T10:00
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid area: destination 'parking' not allowed
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid action: 'unlock'
+2026-10-16 19:46:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-04T10:00
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryDoors - [DIRECTORY DOORS] Success: Initialized 9 doors
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryAreas - [DIRECTORY AREAS] Success: Building loaded
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading roles
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryUsers - [LOADER] Roles loaded successfully.
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading users
+2026-10-16 19:46:22 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Bernat'
+2026-10-16 19:46:22 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Blai'
+2026-10-16 19:46:22 [main] INFO  basenostates.DirectoryUsers - [LOADER] Users loaded successfully.
+2026-10-16 19:46:22 [main] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-16 19:46:22 [main] INFO  basenostates.Door - [DOOR] Door 'D1' changed to 'locked'
+2026-10-16 19:46:22 [main] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-16 19:46:22 [main] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-16 19:46:22 [main] INFO  basenostates.Door - [DOOR] Door 'D2' changed to 'locked'
+2026-10-16 19:46:22 [main] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-16 19:46:22 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-08-09T20:17
+2026-10-16 19:46:22 [main] DEBUG basenostates.Door - Not enough permissions to perform action 'unlock' on door 'D1'.
+2026-10-16 19:46:22 [main] WARN  basenostates.requests.RequestReader - [REQUEST] DENIED: User Manel forbidden on door 'D1'. Reasons: [Present date and/or time not in schedule]
+2026-10-16 19:46:22 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-08-09T20:17
+2026-10-16 19:46:22 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid area: destination 'parking' not allowed
+2026-10-16 19:46:22 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid action: 'unlock'
+2026-10-16 19:46:22 [main] DEBUG basenostates.Door - Not enough permissions to perform action 'unlock' on door 'D2'.
+2026-10-16 19:46:22 [main] WARN  basenostates.requests.RequestReader - [REQUEST] DENIED: User Eulalia forbidden on door 'D2'. Reasons: [Present date and/or time not in schedule, Not allowed destination parking for group employee, Not allowed action unlock for group employee]
+2026-10-16 19:46:22 [main] INFO  basenostates.WebServer - refresh
+2026-10-16 19:46:22 [main] INFO  basenostates.WebServer - Request area
+userName Ana action lock datetime 2026-08-09T20:17
+areaId basement authorized true
+2026-10-16 19:46:22 [main] INFO  basenostates.WebServer - Request reader
+userName Manel action unlock datetime 2026-08-09T20:17
+doorId D1 authorized false, reasons [Present date and/or time not in schedule]
+2026-10-16 19:46:22 [main] INFO  basenostates.WebServer - Request reader
+userName Eulalia action unlock datetime 2026-08-09T20:17
+doorId D2 authorized false, reasons [Present date and/or time not in schedule, Not allowed destination parking for group employee, Not allowed action unlock for group employee]
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryDoors - [DIRECTORY DOORS] Success: Initialized 9 doors
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryAreas - [DIRECTORY AREAS] Success: Building loaded
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading roles
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Roles loaded successfully.
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading users
+2026-10-16 19:47:04 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Bernat'
+2026-10-16 19:47:04 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Blai'
+2026-10-16 19:47:04 [main] INFO  basenostates.DirectoryUsers - [LOADER] Users loaded successfully.
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-01T10:00
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid area: destination 'hall' not allowed
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid action: 'open'
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-01T20:00
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-03T10:00
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid area: destination 'parking' not allowed
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Invalid action: 'unlock'
+2026-10-16 19:47:04 [main] WARN  basenostates.AuthGroup - [AUTH GROUP] Out of schedule for timestamp 2026-10-04T10:00

@@ -2,6 +2,9 @@ package basenostates;
 
 import java.util.ArrayList;
 
+// Concrete visitor that traverses an Area hierarchy (Partition or Space) and collects
+// all the access doors belonging to the visited areas.
+// Used primarily by RequestArea to translate an area-level request into individual door requests.
 public class AccessDoors implements Visitor {
   private final ArrayList<Door> doors;
 

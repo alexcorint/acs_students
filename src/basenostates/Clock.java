@@ -4,67 +4,45 @@ import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * CLOCK CLASS.
- * Defines a timer for the 'Unlocked Shortly' door state
- */
+// Clock implements both the Singleton and Observable patterns.
+// It runs a background daemon thread that periodically (every 1 second) ticks and
+// notifies all registered Observers (doors currently in the UnlockedShortly state).
+// Being a singleton avoids running multiple uncoordinated timer threads.
 @SuppressWarnings("deprecation")
 public class Clock extends Observable {
-
-  private final int seconds;
   private static Clock instance = null;
   private Timer timer;
 
-  private Clock() {
-    this.seconds = 10;
+  private Clock() {}
+
+  public static Clock getInstance() {
+    if (instance == null) {
+      instance = new Clock();
+    }
+    return instance;
   }
 
-  /**
-   * Starts the clock to be 10 seconds long whenever
-   * it's called.
-   */
   public void start() {
     if (timer != null) {
-      timer.cancel();
+      return;
     }
 
-    timer = new Timer();
+    timer = new Timer(true);
     TimerTask task = new TimerTask() {
-      private int remainingSeconds = seconds;
       @Override
       public void run() {
-        if (remainingSeconds > 0) {
-          remainingSeconds--;
-        } else {
-          setChanged();
-          notifyObservers();
-          timer.cancel();
-        }
+        setChanged();
+        notifyObservers();
       }
     };
 
     timer.scheduleAtFixedRate(task, 1000, 1000);
   }
 
-  /**
-   * Stops the actual Timer instance.
-   */
   public void stop() {
-    if (timer != null) {
+    if (timer != null && countObservers() == 0) {
       timer.cancel();
       timer = null;
     }
-  }
-
-  /**
-   * Returns the Clock instance of the actual timer, or creates
-   * a new one if it doesn't exist.
-   * @return a Clock instance.
-   */
-  public static Clock getInstance() {
-    if (instance == null) {
-      instance = new Clock();
-    }
-    return instance;
   }
 }

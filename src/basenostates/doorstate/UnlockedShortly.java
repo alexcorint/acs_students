@@ -7,19 +7,16 @@ import java.util.Observer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * UNLOCKED SHORTLY CLASS.
- * The door state that defines an Unlocked shortly door.
- */
+// Concrete state representing a door temporarily unlocked for a user to pass through.
+// It implements the Observer pattern, subscribing to the singleton Clock.
+// Each door tracks its own 10-second window. When the timer expires:
+// - If the door is closed, it automatically returns to Locked.
+// - If the door is left open, it transitions to Propped (alarm state).
 @SuppressWarnings("deprecation")
 public class UnlockedShortly extends DoorState implements Observer {
+  private int remainingSeconds = 10;
   private static final Logger log = LoggerFactory.getLogger(UnlockedShortly.class);
 
-  /**
-   * Constructor for the Unlocked Shortly state.
-   *
-   * @param door the Door instance to be controlled.
-   */
   public UnlockedShortly(Door door) {
     super(door);
     Clock clock = Clock.getInstance();
@@ -27,25 +24,26 @@ public class UnlockedShortly extends DoorState implements Observer {
     clock.start();
   }
 
-  /**
-   * Callback from the Clock.
-   * Checks if the door is closed to lock it, or open to prop it.
-   *
-   * @param o     the observable object.
-   * @param arg   an argument passed to the {@code notifyObservers}
-   *                 method.
-   */
+  // Periodic callback from Clock (every second).
+  // Decrements this door's remaining seconds and handles automatic transition upon expiry.
   @Override
   public void update(Observable o, Object arg) {
-    log.debug("[UNLOCK SHORTLY] Trying to unlock the door");
+    remainingSeconds--;
 
-    if (!door.isClosed()) {
-      log.warn("[UNLOCK SHORTLY] The door is still open after the unlocked period. Door is now propped.");
-      door.setState(new Propped(door));
-      return;
+    if (remainingSeconds <= 0) {
+      Clock c = Clock.getInstance();
+      c.deleteObserver(this);
+      c.stop();
+
+      if (!door.isClosed()) {
+        log.warn("[UNLOCK SHORTLY] Door '{}' still open after 10s. Transitioning to Propped alarm", door.getId());
+        door.setState(new Propped(door));
+        return;
+      }
+
+      log.info("[UNLOCK SHORTLY] 10s expired and door '{}' is closed. Relocking door automatically", door.getId());
+      door.setState(new Locked(door));
     }
-
-    door.setState(new Locked(door));
   }
 
   @Override
@@ -53,15 +51,11 @@ public class UnlockedShortly extends DoorState implements Observer {
     return "unlocked_shortly";
   }
 
-  /**
-   * 'Unlock' the Unlocked Shortly door and stops the
-   * timer.
-   */
   @Override
   public void unlock() {
     Clock clock = Clock.getInstance();
-    clock.stop();
     clock.deleteObserver(this);
+    clock.stop();
 
     door.setState(new Unlocked(door));
   }
@@ -72,24 +66,22 @@ public class UnlockedShortly extends DoorState implements Observer {
       log.warn("[UNLOCK SHORTLY] The door is already open");
       return;
     }
-
     door.setClosed(false);
   }
 
   @Override
   public void lock() {
     if (!door.isClosed()) {
-      log.warn("[UNLOCK SHORTLY] The door is open. Unable to lock the door");
+      log.warn("[UNLOCK SHORTLY] Cannot lock while open. Door must be closed first");
       return;
     }
 
     Clock clock = Clock.getInstance();
-    clock.stop();
     clock.deleteObserver(this);
+    clock.stop();
 
     door.setState(new Locked(door));
   }
-
 
   @Override
   public void close() {
@@ -97,8 +89,8 @@ public class UnlockedShortly extends DoorState implements Observer {
       log.warn("[UNLOCK SHORTLY] The door is already closed");
       return;
     }
-
+    // According to the state machine, closing physically does not lock immediately;
+    // it waits for the 10-second timer to expire before returning to Locked.
     door.setClosed(true);
-    lock();
   }
 }

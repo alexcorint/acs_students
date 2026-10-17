@@ -1,7 +1,10 @@
 package basenostates;
 
-import basenostates.requests.*;
-
+import basenostates.requests.Request;
+import basenostates.requests.RequestArea;
+import basenostates.requests.RequestChildren;
+import basenostates.requests.RequestReader;
+import basenostates.requests.RequestRefresh;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,34 +14,34 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-// Based on
-// https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
-// http://www.jcgonzalez.com/java-socket-mini-server-http-example
+// WebServer acts as the facade of the ACU (Access Control Unit). It listens for
+// HTTP requests on port 8080 from the simulator or mobile app, instantiates the
+// corresponding Request object, executes it and returns the JSON answer.
+// Activity is recorded to activity.log via SLF4J and Logback.
 public class WebServer {
-  private static final int PORT = 8080; // port to listen connection
+  private static final int PORT = 8080;
   private static final DateTimeFormatter formatter =
-          DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+  private static final Logger log = LoggerFactory.getLogger(WebServer.class);
 
   public WebServer() {
     try {
       ServerSocket serverConnect = new ServerSocket(PORT);
-      System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
-      // we listen until user halts server execution
+      log.info("Server started. Listening for connections on port : {} ...", PORT);
+
       while (true) {
-        // each client connection will be managed in a dedicated Thread
         new SocketThread(serverConnect.accept());
-        // create dedicated thread to manage the client connection
       }
     } catch (IOException e) {
-      System.err.println("Server Connection error : " + e.getMessage());
+      log.error("Server Connection error : {}", e.getMessage());
     }
   }
 
-
   private class SocketThread extends Thread {
-    // as an inner class, SocketThread sees WebServer attributes
-    private final Socket insocked; // client connection via Socket class
+    private final Socket insocked;
 
     SocketThread(Socket insocket) {
       this.insocked = insocket;
@@ -47,77 +50,82 @@ public class WebServer {
 
     @Override
     public void run() {
-      // we manage our particular client connection
       BufferedReader in;
       PrintWriter out;
       String resource;
 
       try {
-        // we read characters from the client via input stream on the socket
         in = new BufferedReader(new InputStreamReader(insocked.getInputStream()));
-        // we get character output stream to client
         out = new PrintWriter(insocked.getOutputStream());
-        // get first line of the request from the client
         String input = in.readLine();
-        // we parse the request with a string tokenizer
 
-        System.out.println("sockedthread : " + input);
+        if (input == null) {
+          insocked.close();
+          return;
+        }
+
+        log.debug("SocketThread received input : {}", input);
 
         StringTokenizer parse = new StringTokenizer(input);
-        String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
+        String method = parse.nextToken().toUpperCase();
         if (!method.equals("GET")) {
-          System.out.println("501 Not Implemented : " + method + " method.");
+          log.warn("501 Not Implemented : {} method.", method);
         } else {
-          // what comes after "localhost:8080"
           resource = parse.nextToken();
-          System.out.println("input " + input);
-          System.out.println("method " + method);
-          System.out.println("resource " + resource);
+          log.debug("HTTP GET resource: {}", resource);
 
           parse = new StringTokenizer(resource, "/[?]=&");
           int i = 0;
-          String[] tokens = new String[20]; // more than the actual number of parameters
+          String[] tokens = new String[20];
           while (parse.hasMoreTokens()) {
             tokens[i] = parse.nextToken();
-            System.out.println(i + " " + tokens[i]);
             i++;
           }
 
-          // Here is where we send the request and get the answer inside it
           Request request = makeRequest(tokens);
           if (request != null) {
             String typeRequest = tokens[0];
-            System.out.println("created request " + typeRequest + " " + request);
+            log.debug("Created request: {} ({})", typeRequest, request);
             request.process();
-            System.out.println("processed request " + typeRequest + " " + request);
-            // Make the answer as a JSON string, to be sent to the Javascript client
+            log.debug("Processed request: {} ({})", typeRequest, request);
+
+            logActivity(request);
+
             String answer = makeJsonAnswer(request);
-            System.out.println("answer\n" + answer);
-            // Here we send the response to the client
+            log.debug("Answer: {}", answer);
+
             out.println(answer);
-            out.flush(); // flush character output stream buffer
+            out.flush();
           }
         }
 
         in.close();
         out.close();
-        insocked.close(); // we close socket connection
+        insocked.close();
       } catch (Exception e) {
-        System.err.println("Exception : " + e);
+        log.error("Exception in SocketThread : {}", e.getMessage());
+      }
+    }
+
+    private void logActivity(Request request) {
+      if (request instanceof RequestRefresh) {
+        log.info("refresh");
+      } else if (request instanceof RequestArea areaReq) {
+        log.info("Request area\nuserName {} action {} datetime {}\nareaId {} authorized {}",
+            areaReq.getUserName(), areaReq.getAction(), areaReq.getNow(),
+            areaReq.getAreaId(), areaReq.isAuthorized());
+      } else if (request instanceof RequestReader readerReq) {
+        String reasonsStr = readerReq.isAuthorized() ? "" : ", reasons " + readerReq.getReasons();
+        log.info("Request reader\nuserName {} action {} datetime {}\ndoorId {} authorized {}{}",
+            readerReq.getUserName(), readerReq.getAction(), readerReq.getNow(),
+            readerReq.getDoorId(), readerReq.isAuthorized(), reasonsStr);
+      } else if (request instanceof RequestChildren childrenReq) {
+        log.info("Request children\nareaId {}", childrenReq.getArea());
       }
     }
 
     private Request makeRequest(String[] tokens) {
-      // always return request because it contains the answer for the Javascript client
-      System.out.print("tokens : ");
-      for (String token : tokens) {
-        System.out.print(token + ", ");
-      }
-      System.out.println();
-
       Request request;
-      // assertions below evaluated to false won't stop the webserver, just print an
-      // assertion error, maybe because the webserver runs in a socked thread
       switch (tokens[0]) {
         case "refresh":
           request = new RequestRefresh();
@@ -132,7 +140,7 @@ public class WebServer {
           request = makeRequestChildren(tokens);
           break;
         default:
-          // just in case we change the user interface or the simulator
+          log.warn("Unknown request: {}", tokens[0]);
           assert false : "unknown request " + tokens[0];
           request = null;
           System.exit(-1);
@@ -161,10 +169,7 @@ public class WebServer {
       answer += "HTTP/1.0 200 OK\r\n";
       answer += "Content-type: application/json\r\n";
       answer += "Access-Control-Allow-Origin: *\r\n";
-      // SUPERIMPORTANT to avoid the CORS problem :
-      // "Cross-Origin Request Blocked: The Same Origin Policy disallows reading
-      // the remote resource..."
-      answer += "\r\n"; // blank line between headers and content, very important !
+      answer += "\r\n";
       return answer;
     }
 
@@ -178,7 +183,5 @@ public class WebServer {
       String areaId = tokens[2];
       return new RequestChildren(areaId);
     }
-
   }
-
 }

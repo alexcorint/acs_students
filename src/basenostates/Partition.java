@@ -4,45 +4,28 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- * PARTITION CLASS.
- * Defines a group of spaces contained.
- */
+// Composite node of the Composite design pattern for areas.
+// A Partition represents a higher-level grouping of areas (spaces or sub-partitions),
+// such as a floor or an entire building. It enables granting access privileges
+// or performing bulk operations (like locking all doors in a partition) uniformly.
 public class Partition extends Area {
   private final ArrayList<Area> spaces;
 
-  /**
-   * Constructor for the Partition class.
-   * @param id     The identification string of the partition.
-   * @param spaces The list of spaces contained in this
-   *               partition.
-   */
   public Partition(String id, ArrayList<Area> spaces) {
     super(id);
     this.spaces = spaces;
   }
 
-  /**
-   * Gets the list of spaces in this partition.
-   * @return An ArrayList containing the Area objects.
-   */
   public ArrayList<Area> getSpaces() {
     return spaces;
   }
 
-  /**
-   * Accepts a visitor to process this space.
-   * @param v Visitor instance to be accepted.
-   */
+  @Override
   public void acceptVisitor(Visitor v) {
     v.visitPartition(this);
   }
 
-  /**
-   * Converts the space data into a JSON object.
-   * @param depth The current depth level (unused in Space but required by signature).
-   * @return JSON object representing the space and its doors.
-   */
+  @Override
   public JSONObject toJson(int depth) {
     JSONObject obj = new JSONObject();
     JSONArray arr = new JSONArray();
@@ -54,8 +37,7 @@ public class Partition extends Area {
       for (Area a : spaces) {
         arr.put(a.toJson(depth - 1));
       }
-
-      obj.put("spaces", arr);
+      obj.put("areas", arr);
     }
 
     return obj;

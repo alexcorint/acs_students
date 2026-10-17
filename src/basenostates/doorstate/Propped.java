@@ -4,18 +4,12 @@ import basenostates.Door;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * PROPPED CLASS.
- * The door state that defines a Propped door.
- */
+// Concrete state representing an alarm state: a door that should be closed remains open
+// past the maximum allowed duration (10 seconds) of the UnlockedShortly state.
+// All regular actions are rejected until the door is physically closed, returning it to Locked.
 public class Propped extends DoorState {
   private static final Logger log = LoggerFactory.getLogger(Propped.class);
 
-  /**
-   * Constructor for the Propped state.
-   *
-   * @param door the Door instance to be controlled.
-   */
   public Propped(Door door) {
     super(door);
   }
@@ -27,27 +21,27 @@ public class Propped extends DoorState {
 
   @Override
   public void unlock() {
-    log.warn("[PROPPED] Cannot unlock a Propped door");
+    log.warn("[PROPPED] Rejected action: Cannot unlock a Propped door in alarm");
   }
 
   @Override
   public void unlockShortly() {
-    log.warn("[PROPPED] Cannot unlock shortly a Propped door");
+    log.warn("[PROPPED] Rejected action: Cannot unlock shortly a Propped door");
   }
 
   @Override
   public void open() {
-    log.warn("[PROPPED] Cannot open a Propped door");
+    log.warn("[PROPPED] Rejected action: A Propped door is already open");
   }
 
   @Override
   public void lock() {
-    log.warn("[PROPPED] Cannot lock a Propped door");
+    log.warn("[PROPPED] Rejected action: Cannot lock a door while propped open");
   }
 
   @Override
   public void close() {
-    log.debug("[PROPPED] Trying to close the propped door...");
+    log.info("[PROPPED] Door closed by reader request. Clearing alarm, door is now locked");
     door.setClosed(true);
     door.setState(new Locked(door));
   }

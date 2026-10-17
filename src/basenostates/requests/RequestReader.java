@@ -12,11 +12,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * REQUEST READER CLASS.
- * Processes the request (Who, What, Where, When) to decide
- * if an action is authorized.
- */
+// Represents an action request initiated from an individual door's credential reader.
+// Encapsulates the four Ws (Who: credential, What: action, Where: doorId, When: now).
+// Authorizes the request using the user's AuthGroup and, if authorized, delegates the
+// execution to the corresponding Door.
 public class RequestReader implements Request {
   private final String credential; // who
   private final String action;     // what
@@ -29,19 +28,11 @@ public class RequestReader implements Request {
   private boolean doorClosed;
   private static final Logger log = LoggerFactory.getLogger(RequestReader.class);
 
-  /**
-   * Constructor for the RequestReader.
-   *
-   * @param credential The user credential identifier.
-   * @param action The action to perform (e.g., "unlock").
-   * @param now The timestamp of the request.
-   * @param doorId The identifier of the target door.
-   */
   public RequestReader(String credential, String action, LocalDateTime now, String doorId) {
     this.credential = credential;
     this.action = action;
     this.doorId = doorId;
-    reasons = new ArrayList<>();
+    this.reasons = new ArrayList<>();
     this.now = now;
   }
 
@@ -61,33 +52,39 @@ public class RequestReader implements Request {
     reasons.add(reason);
   }
 
-  /**
-   * Converts the request result to a String.
-   *
-   * @return String representation of the request.
-   */
+  public String getUserName() {
+    return userName != null ? userName : "unknown";
+  }
+
+  public String getDoorId() {
+    return doorId;
+  }
+
+  public LocalDateTime getNow() {
+    return now;
+  }
+
+  public ArrayList<String> getReasons() {
+    return reasons;
+  }
+
   @Override
   public String toString() {
     if (userName == null) {
       userName = "unknown";
     }
     return "Request{"
-            + "credential=" + credential
-            + ", userName=" + userName
-            + ", action=" + action
-            + ", now=" + now
-            + ", doorID=" + doorId
-            + ", closed=" + doorClosed
-            + ", authorized=" + authorized
-            + ", reasons=" + reasons
-            + "}";
+        + "credential=" + credential
+        + ", userName=" + userName
+        + ", action=" + action
+        + ", now=" + now
+        + ", doorID=" + doorId
+        + ", closed=" + doorClosed
+        + ", authorized=" + authorized
+        + ", reasons=" + reasons
+        + "}";
   }
 
-  /**
-   * Converts the answer to a JSON object.
-   *
-   * @return JSONObject with the result data.
-   */
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
     json.put("authorized", authorized);
@@ -99,17 +96,12 @@ public class RequestReader implements Request {
     return json;
   }
 
-  /**
-   * Processes the request: finds user/door and checks authorization.
-   * If authorized, delegates the action to the door.
-   */
   public void process() {
-    User user = DirectoryUsers.findUserByCredential(credential);
-    Door door = DirectoryDoors.findDoorById(doorId);
+    User user = DirectoryUsers.getInstance().findUserByCredential(credential);
+    Door door = DirectoryDoors.getInstance().findDoorById(doorId);
 
     if (door == null) {
-      log.warn("[REQUEST] FAILED: Door '{}' not found for user '{}'",
-          doorId, credential);
+      log.warn("[REQUEST] FAILED: Door '{}' not found for user '{}'", doorId, credential);
       return;
     }
 
@@ -121,49 +113,42 @@ public class RequestReader implements Request {
     door.processRequest(this);
 
     if (isAuthorized()) {
-      if (!preState.equals(door.getStateName())
-          || preClosed != door.isClosed()) {
+      if (!preState.equals(door.getStateName()) || preClosed != door.isClosed()) {
         log.info("[REQUEST] SUCCESS: Authorized for user '{}' ({})",
             userName, (user != null ? user.getRole() : "unknown"));
       } else {
         log.debug("[REQUEST] Action ignored or redundant.");
       }
-
     } else {
-      log.warn("[REQUEST] DENIED: User {} forbidden on  door '{}'. Reason: {}",
+      log.warn("[REQUEST] DENIED: User {} forbidden on door '{}'. Reasons: {}",
           userName, doorId, reasons);
     }
 
     doorClosed = door.isClosed();
   }
 
-  /**
-   * Internal method to check logic rules against AuthGroup.
-   *
-   * @param user The user attempting the action.
-   * @param door The target door.
-   */
   private void authorize(User user, Door door) {
     if (user == null) {
       authorized = false;
-      addReason("User doesn't exists");
+      addReason("User doesn't exist");
     } else {
       this.userName = user.getName();
-
       AuthGroup group = user.getAuthGroup();
 
       if (group == null) {
         authorized = false;
         addReason("User has no permissions assigned");
       } else {
-        authorized = group.isAllowed(action, doorId, now);
-
-        if (!authorized) {
-          addReason("User is not authorized to perform action '" + action + "' on door '"
-              + doorId + "'.");
+        ArrayList<String> failedReasons = group.checkPermissions(action, door, now, user.getRole());
+        if (failedReasons.isEmpty()) {
+          authorized = true;
+        } else {
+          authorized = false;
+          for (String r : failedReasons) {
+            addReason(r);
+          }
         }
       }
     }
   }
 }
-
