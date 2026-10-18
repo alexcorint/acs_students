@@ -812,3 +812,46 @@ Access-Control-Allow-Origin: *
 2026-10-18 18:36:52 [main] DEBUG basenostates.requests.RequestReader - [REQUEST] Action ignored or redundant.
 2026-10-18 18:36:52 [main] WARN  basenostates.doorstate.Locked - [LOCKED] The door is already locked
 2026-10-18 18:36:52 [main] DEBUG basenostates.requests.RequestReader - [REQUEST] Action ignored or redundant.
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryDoors - [DIRECTORY DOORS] Success: Initialized 9 doors
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryAreas - [DIRECTORY AREAS] Success: Building loaded
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading roles
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryUsers - [LOADER] Roles loaded successfully.
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryUsers - [LOADER] Loading users
+2026-10-18 18:39:39 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Bernat'
+2026-10-18 18:39:39 [main] WARN  basenostates.DirectoryUsers - [LOADER] WARNING: Role 'visitor' not found for user 'Blai'
+2026-10-18 18:39:39 [main] INFO  basenostates.DirectoryUsers - [LOADER] Users loaded successfully.
+2026-10-18 18:39:39 [main] INFO  basenostates.WebServer - Server started. Listening for connections on port : 8080 ...
+2026-10-18 18:39:44 [Thread-0] DEBUG basenostates.WebServer - SocketThread received input : GET /refresh HTTP/1.1
+2026-10-18 18:39:44 [Thread-0] DEBUG basenostates.WebServer - HTTP GET resource: /refresh
+2026-10-18 18:39:44 [Thread-0] DEBUG basenostates.WebServer - Created request: refresh (RequestRefresh{[]})
+2026-10-18 18:39:44 [Thread-0] DEBUG basenostates.WebServer - Processed request: refresh (RequestRefresh{[{"originSpace":"exterior","destinationSpace":"parking","closed":true,"id":"D1","state":"unlocked"}, {"originSpace":"stairs","destinationSpace":"parking","closed":true,"id":"D2","state":"unlocked"}, {"originSpace":"exterior","destinationSpace":"hall","closed":true,"id":"D3","state":"unlocked"}, {"originSpace":"stairs","destinationSpace":"hall","closed":true,"id":"D4","state":"unlocked"}, {"originSpace":"hall","destinationSpace":"room1","closed":true,"id":"D5","state":"unlocked"}, {"originSpace":"hall","destinationSpace":"room2","closed":true,"id":"D6","state":"unlocked"}, {"originSpace":"stairs","destinationSpace":"corridor","closed":true,"id":"D7","state":"unlocked"}, {"originSpace":"corridor","destinationSpace":"room3","closed":true,"id":"D8","state":"unlocked"}, {"originSpace":"corridor","destinationSpace":"IT","closed":true,"id":"D9","state":"unlocked"}]})
+2026-10-18 18:39:44 [Thread-0] INFO  basenostates.WebServer - refresh
+2026-10-18 18:39:44 [Thread-0] DEBUG basenostates.WebServer - Answer: HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"doors":[{"originSpace":"exterior","destinationSpace":"parking","closed":true,"id":"D1","state":"unlocked"},{"originSpace":"stairs","destinationSpace":"parking","closed":true,"id":"D2","state":"unlocked"},{"originSpace":"exterior","destinationSpace":"hall","closed":true,"id":"D3","state":"unlocked"},{"originSpace":"stairs","destinationSpace":"hall","closed":true,"id":"D4","state":"unlocked"},{"originSpace":"hall","destinationSpace":"room1","closed":true,"id":"D5","state":"unlocked"},{"originSpace":"hall","destinationSpace":"room2","closed":true,"id":"D6","state":"unlocked"},{"originSpace":"stairs","destinationSpace":"corridor","closed":true,"id":"D7","state":"unlocked"},{"originSpace":"corridor","destinationSpace":"room3","closed":true,"id":"D8","state":"unlocked"},{"originSpace":"corridor","destinationSpace":"IT","closed":true,"id":"D9","state":"unlocked"}]}
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.WebServer - SocketThread received input : GET /area?credential=11343&action=lock&datetime=2026-10-18T09:30&areaId=ground_floor HTTP/1.1
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.WebServer - HTTP GET resource: /area?credential=11343&action=lock&datetime=2026-10-18T09:30&areaId=ground_floor
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.WebServer - Created request: area (Request{credential=11343, action=lock, now=2026-10-18T09:30, areaId=ground_floor, requestsDoors=})
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.Door - [DOOR] Door 'D3' changed to 'locked'
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.Door - [DOOR] Door 'D4' changed to 'locked'
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.Door - [DOOR] Door 'D5' changed to 'locked'
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.doorstate.Unlocked - [UNLOCKED] Trying to lock the door...
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.Door - [DOOR] Door 'D6' changed to 'locked'
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.requests.RequestReader - [REQUEST] SUCCESS: Authorized for user 'Ana' (admin)
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.WebServer - Processed request: area (Request{credential=11343, action=lock, now=2026-10-18T09:30, areaId=ground_floor, requestsDoors=[Request{credential=11343, userName=Ana, action=lock, now=2026-10-18T09:30, doorID=D3, closed=true, authorized=true, reasons=[]}, Request{credential=11343, userName=Ana, action=lock, now=2026-10-18T09:30, doorID=D4, closed=true, authorized=true, reasons=[]}, Request{credential=11343, userName=Ana, action=lock, now=2026-10-18T09:30, doorID=D5, closed=true, authorized=true, reasons=[]}, Request{credential=11343, userName=Ana, action=lock, now=2026-10-18T09:30, doorID=D6, closed=true, authorized=true, reasons=[]}]})
+2026-10-18 18:39:49 [Thread-1] INFO  basenostates.WebServer - Request area
+userName Ana action lock datetime 2026-10-18T09:30
+areaId ground_floor authorized true
+2026-10-18 18:39:49 [Thread-1] DEBUG basenostates.WebServer - Answer: HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"areaId":"ground_floor","action":"lock","requestsDoors":[{"reasons":[],"authorized":true,"action":"lock","closed":true,"state":"locked","doorId":"D3"},{"reasons":[],"authorized":true,"action":"lock","closed":true,"state":"locked","doorId":"D4"},{"reasons":[],"authorized":true,"action":"lock","closed":true,"state":"locked","doorId":"D5"},{"reasons":[],"authorized":true,"action":"lock","closed":true,"state":"locked","doorId":"D6"}]}
