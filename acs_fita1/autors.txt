@@ -1,0 +1,14 @@
+Daniel Fort Herasimchyk - NIU 1641908
+Alex Coya Riopedre - NIU 1598763
+
+Daniel: los estados de la puerta con el patron state (DoorState, Unlocked, Locked, 
+UnlockedShortly y Propped) y cambiar Door para que haga las acciones con el estado. 
+Tambien los grupos de usuarios (UserGroup y DirectoryUsers) y el authorize de RequestReader 
+con las reasons.
+
+Alex: el diagrama uml (los dos .puml y los png), las areas con el composite (Area, Space y 
+Partition), DirectoryAreas con el edificio y las puertas, la clase Schedule para los 
+horarios y el process de RequestArea. El Clock con el Timer y que UnlockedShortly sea 
+observer para que la puerta pase sola a locked o propped a los 10s.
+
+Lo hemos probado con el simulador entre los dos.
