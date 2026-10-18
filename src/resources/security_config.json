@@ -9,7 +9,7 @@
         "days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
       },
       "actions": ["open", "close", "unlock_shortly"],
-      "allowed_areas": ["ground floor", "floor 1", "stairs", "exterior"]
+      "allowed_areas": ["ground_floor", "floor1", "stairs", "exterior"]
     },
     "manager": {
       "schedule": {

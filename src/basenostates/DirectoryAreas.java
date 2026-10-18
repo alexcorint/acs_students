@@ -54,9 +54,9 @@ public class DirectoryAreas {
     // Main partitions
     Partition basement = new Partition("basement",
         new ArrayList<>(Collections.singletonList(parking)));
-    Partition groundFloor = new Partition("ground floor",
+    Partition groundFloor = new Partition("ground_floor",
         new ArrayList<>(Arrays.asList(hall, room1, room2)));
-    Partition floor1 = new Partition("floor 1",
+    Partition floor1 = new Partition("floor1",
         new ArrayList<>(Arrays.asList(corridor, it, room3)));
 
     // Main building

@@ -24,9 +24,26 @@ public class AreaFinder implements Visitor {
     return null;
   }
 
+  private boolean matches(String targetId) {
+    if (targetId == null || this.id == null) {
+      return false;
+    }
+    if (targetId.equalsIgnoreCase(this.id)) {
+      return true;
+    }
+    String normTarget = targetId.replace("_", " ").trim();
+    String normThis = this.id.replace("_", " ").trim();
+    if (normTarget.equalsIgnoreCase(normThis)) {
+      return true;
+    }
+    String stripTarget = targetId.replace("_", "").replace(" ", "").trim();
+    String stripThis = this.id.replace("_", "").replace(" ", "").trim();
+    return stripTarget.equalsIgnoreCase(stripThis);
+  }
+
   @Override
   public void visitSpace(Space s) {
-    if (s.getId().equalsIgnoreCase(this.id)) {
+    if (matches(s.getId())) {
       this.area = s;
       return;
     }
@@ -41,7 +58,7 @@ public class AreaFinder implements Visitor {
 
   @Override
   public void visitPartition(Partition p) {
-    if (p.getId().equalsIgnoreCase(this.id)) {
+    if (matches(p.getId())) {
       this.area = p;
     } else {
       for (Area a : p.getSpaces()) {
